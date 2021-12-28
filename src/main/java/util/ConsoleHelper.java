@@ -1,4 +1,4 @@
-package main.java;
+package util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static main.java.NotificationFactory.parsingFailureNotification;
+import static util.PropertiesManager.parsingFailureNotification;
 
 public class ConsoleHelper {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -28,8 +28,8 @@ public class ConsoleHelper {
         return result;
     }
 
-    //рекурсивный метод для введения пользователем валидного адреса сервера
-    //при неверных значениях адреса заставляет повторить ввод
+    // рекурсивный метод для введения пользователем валидного адреса сервера
+    // при неверных значениях адреса заставляет повторить ввод
     public static String readServerAddress() {
         String address = readString();
         if (isValidAddress(address)) {
@@ -64,8 +64,8 @@ public class ConsoleHelper {
         return false;
     }
 
-    //метод для введения валидного номера порта сервера,
-    //при неверных значениях порта заставляет повторить ввод
+    // метод для введения валидного номера порта сервера,
+    // при неверных значениях порта заставляет повторить ввод
     public static int readNumServerPort() {
         try {
             Integer port = Integer.parseInt(readString());
@@ -78,7 +78,7 @@ public class ConsoleHelper {
         return readNumServerPort();
     }
 
-    //проверяет, чтобы номер порта укладывался в числовой диапазон возможных портов
+    // проверяет, чтобы номер порта укладывался в числовой диапазон возможных портов
     private static boolean isValidPort(Integer port) {
         return port != null
                 && port <= 65535

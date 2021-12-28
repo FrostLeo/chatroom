@@ -1,4 +1,6 @@
-package main.java;
+package server;
+
+import util.ConsoleHelper;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,7 +8,7 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static main.java.NotificationFactory.*;
+import static util.PropertiesManager.*;
 
 public class Server {
     private static Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
@@ -18,8 +20,8 @@ public class Server {
         try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
             System.out.println(serverStartedNotification());
 
-            //в цикле сервер принимает входящие подключения и создает для каждого из них
-            //отдельный трэд-хэндлер
+            // в цикле сервер принимает входящие подключения и создает для каждого из них
+            // отдельный трэд-хэндлер
             while (true) {
                 Socket inputSocket = serverSocket.accept();
                 Handler currentHandler = new Handler(inputSocket);
@@ -31,7 +33,7 @@ public class Server {
         }
     }
 
-    //отправляет сообщение всем участника чата
+    // отправляет сообщение всем участника чата
     private static void sendBroadcastMessage(Message message) {
         connectionMap.forEach((s, c) -> {
             try {
@@ -82,12 +84,12 @@ public class Server {
             return message.getType() == MessageType.TEXT;
         }
 
-        //формирует строку для отправки
+        // формирует строку для отправки
         private String getSendLine(String userName, Message message) {
             return userName + ": " + message.getData();
         }
 
-        //регистрация на сервере чата
+        // регистрация на сервере чата
         private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
             Message userAnswer = requestUserName(connection, nameRequestNotification());
             String resultUserName = recursionUserNameRequest(connection, userAnswer);
@@ -96,7 +98,7 @@ public class Server {
             return resultUserName;
         }
 
-        //метод запрашивает у пользователя имя для регистрации на сервере чата
+        // запрашивает у пользователя имя для регистрации на сервере чата
         private Message requestUserName(Connection connection, String messageText) throws IOException {
             Message result;
             connection.send(new Message(MessageType.NAME_REQUEST, messageText));
@@ -118,7 +120,7 @@ public class Server {
         }
 
         /*
-        проверка выбранного имени, возвращает true, еслм имя:
+        проверяет выбранное имя, возвращает true, если имя:
             - не соответствует требуемому формату;
             - пустое;
             - уже присутствует среди участников чата,
@@ -144,20 +146,20 @@ public class Server {
             try (Connection connection = new Connection(socket)) {
                 userName = serverHandshake(connection);
 
-                //рассылаем остальным участникам чата сообщение о новичке
+                //рассылает остальным участникам чата сообщение о новичке
                 sendBroadcastMessage(new Message(MessageType.USER_ADDED, userName));
 
-                //оповещаем нового участника о присутствующих в чате
+                //оповещает нового участника о присутствующих в чате
                 notifyUsers(connection, userName);
 
-                //ожидаем сообщения в основном методе
+                //ожидает сообщения в основном методе
                 serverMainLoop(connection, userName);
 
             } catch (IOException | ClassNotFoundException ex) {
-//                ConsoleHelper.writeMessage(ioErrorNotification() + socketAddress);
+                // особого поведения не требуется
             } finally {
                 if (kick(userName)) {
-                    //рассылаем остальным сообщение об удалении участника
+                    // рассылает остальным сообщение об удалении участника
                     sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
                 }
             }

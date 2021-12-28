@@ -1,18 +1,18 @@
-package main.java;
+package util;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
 
-public class NotificationFactory {
+public class PropertiesManager {
     private static Properties prop = new Properties();
 
     static {
         try {
-            prop.load(new FileReader("./src/main/resources/api.properties"));
+            prop.load(new FileReader("./src/main/resources/.properties"));
         } catch (IOException e) {
-            System.out.println("Отсутствует файл /src/main/resources/api.properties. Программа будет закрыта");
+            System.out.println("Отсутствует файл /src/main/resources/.properties. Программа будет закрыта");
             System.exit(1);
         }
     }
@@ -61,10 +61,6 @@ public class NotificationFactory {
         return prop.getProperty("disconnected");
     }
 
-    public static String ioErrorNotification() {
-        return prop.getProperty("ioError");
-    }
-
     public static String userConnectedNotification() {
         return prop.getProperty("userConnected");
     }
@@ -79,5 +75,21 @@ public class NotificationFactory {
 
     public static String clientErrorNotification() {
         return prop.getProperty("clientError");
+    }
+
+    public static String botIntroNotification() {
+        return prop.getProperty("botIntro");
+    }
+
+    public static String botInfoNotification() {
+        return prop.getProperty("botInfo");
+    }
+
+    public static String botCurrencyJsonHttpAddress() {
+        return prop.getProperty("jsonCurrencyHttpAddress");
+    }
+
+    public static String botJsonNotFoundNotification() {
+        return prop.getProperty("jsonCurrencyNotFound");
     }
 }

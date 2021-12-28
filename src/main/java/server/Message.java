@@ -1,4 +1,4 @@
-package main.java;
+package server;
 
 import java.io.Serializable;
 

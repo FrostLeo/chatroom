@@ -1,13 +1,15 @@
-package main.java.client;
+package client;
 
-import main.java.*;
+import server.Connection;
+import server.Message;
+import server.MessageType;
+import util.ConsoleHelper;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Locale;
 
-import static main.java.NotificationFactory.*;
-
+import static util.PropertiesManager.*;
 
 public class Client {
     public static void main(String[] args) {
@@ -31,7 +33,7 @@ public class Client {
         }
     }
 
-    //создает и запускает сокет тред в качестве демона
+    // создает и запускает сокет тред в качестве демона
     private void initialDaemonThread() {
         Thread currentThread = getSocketThread();
         currentThread.setDaemon(true);
@@ -42,7 +44,7 @@ public class Client {
         return new SocketThread();
     }
 
-    //выводит пользователю сообщение об удачном подключении или об ошибке
+    // выводит пользователю сообщение об удачном подключении или об ошибке
     private void showConnectedNotification() {
         if (clientConnected) {
             ConsoleHelper.writeMessage(clientConnectedNotification());
@@ -71,7 +73,7 @@ public class Client {
         }
     }
 
-    //метод создан для будущего переопределения в случае наследования клиента (планируется клиент с GUI)
+    // метод создан для будущего переопределения в случае наследования клиента (планируется клиент с GUI)
     protected boolean shouldSendTextFromConsole() {
         return true;
     }
@@ -101,7 +103,7 @@ public class Client {
         return ConsoleHelper.readString();
     }
 
-    //внутренний класс, инкапсюлирующий соединение с сервером и обрабатывающий сообщения от сервера
+    // внутренний класс, инкапсюлирующий соединение с сервером и обрабатывающий сообщения от сервера
     public class SocketThread extends Thread {
         @Override
         public void run() {
@@ -129,7 +131,7 @@ public class Client {
             ConsoleHelper.writeMessage(userName + " " + userDisconnectedNotification());
         }
 
-        //устанавливает новое значение clientConnected и дает команду основному трэду на продолжение
+        // устанавливает новое значение clientConnected и дает команду основному трэду на продолжение
         protected void notifyConnectionStatusChanged(boolean clientConnected) {
             Client.this.clientConnected = clientConnected;
             synchronized (Client.this) {
@@ -137,6 +139,8 @@ public class Client {
             }
         }
 
+        // процедура знакомства с клиентом при подключении -
+        // цикличный запрос никнейма с его валидацией до подтверждения сервером
         protected void clientHandshake() throws IOException, ClassNotFoundException {
             Message inputMessage;
             do {
@@ -162,8 +166,7 @@ public class Client {
             }
         }
 
-
-        //основной метод сокетТрэда - постоянно ожидает сообщения и обрабатывает их, в зависимости от типа
+        // основной метод сокетТрэда - постоянно ожидает сообщения и обрабатывает их, в зависимости от типа
         protected void socketThreadMainLoop() throws IOException, ClassNotFoundException {
             while (true) {
                 Message inputMessage = connection.receive();
@@ -173,6 +176,7 @@ public class Client {
             }
         }
 
+        // обрабатывает сообщение в зависимости от его типа
         private void processMessage(MessageType messageType, String messageData) throws IOException {
             switch (messageType) {
                 case TEXT -> processIncomingMessage(messageData);

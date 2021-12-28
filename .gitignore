@@ -3,8 +3,8 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
+/target
 /dataSources/
 /dataSources.local.xml
 /.idea
-/out
 /Chatroom.iml
